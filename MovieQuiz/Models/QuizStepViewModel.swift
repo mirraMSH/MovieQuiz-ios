@@ -13,3 +13,9 @@ struct QuizStepViewModel {
     let questionNumber: String
 }
 
+struct ViewModel {
+        let image: UIImage
+        let question: String
+        let questionNumber: String
+    }
+
