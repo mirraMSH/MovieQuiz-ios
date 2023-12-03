@@ -7,14 +7,22 @@
 
 import UIKit
 
-final class MovieQuizPresenter {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private var currentQuestionIndex = 0
     let questionsAmount: Int = 10
     var correctAnswers: Int = 0
     var currentQuestion: QuizQuestion?
-    private var questionFactory: QuestionFactoryProtocol?
+    var questionFactory: QuestionFactoryProtocol?
     private weak var viewController: MovieQuizViewController?
+    
+    init(viewController: MovieQuizViewController) {
+            self.viewController = viewController
+            
+            questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+            questionFactory?.loadData()
+            viewController.showLoadingIndicator()
+        }
     
     func isLastQuestion() -> Bool {
            currentQuestionIndex == questionsAmount - 1
@@ -71,6 +79,16 @@ final class MovieQuizPresenter {
         DispatchQueue.main.async { [weak self] in
             self?.viewController?.show(quiz: viewModel)
         }
+    }
+    
+   func didLoadDataFromServer() {
+       viewController?.hideLoadingIndicator()
+       questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        let message = error.localizedDescription
+                viewController?.showNetworkError(message: message)
     }
     
 }
