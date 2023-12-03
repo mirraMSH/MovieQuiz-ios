@@ -5,7 +5,6 @@
 //  Created by Мария Шагина on 26.11.2023.
 //
 
-import Foundation
 import UIKit
 
 
@@ -28,7 +27,7 @@ final class AlertPresenter {
         alertController.addAction(UIAlertAction(
                     title: alert.buttonText,
                     style: .cancel,
-                    handler: { _ in
+                    handler: {_ in
                         self.alert.completion()
                     }))
                 controller?.present(alertController, animated: true, completion: nil)
