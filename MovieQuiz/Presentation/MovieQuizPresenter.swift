@@ -10,19 +10,16 @@ import UIKit
 final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     private var currentQuestionIndex = 0
-    let questionsAmount: Int = 10
-    var correctAnswers: Int = 0
-    var currentQuestion: QuizQuestion?
+    private let questionsAmount: Int = 10
+    private var correctAnswers: Int = 0
+    
+    private var currentQuestion: QuizQuestion?
     var questionFactory: QuestionFactoryProtocol?
-    private weak var viewController: MovieQuizViewController?
-    let statisticService: StatisticService!
+    private weak var viewController: MovieQuizViewControllerProtocol?
+    private let statisticService: StatisticService!
     
-    var noButton: UIButton!
-    var yesButton: UIButton!
-    
-    init(viewController: MovieQuizViewController) {
+    init(viewController: MovieQuizViewControllerProtocol = MovieQuizViewController()) {
         self.viewController = viewController
-        
         statisticService = StatisticServiceImplementation()
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
@@ -60,7 +57,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         didAnswer(isCorrectAnswer: false)
     }
     
-    func didAnswer(isCorrectAnswer: Bool) {
+    private func didAnswer(isCorrectAnswer: Bool) {
         guard let currentQuestion = currentQuestion else {
             return
         }
@@ -110,7 +107,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         return resultMessage
     }
     
-    func proceedToNextQuestionOrResults() {
+    private func proceedToNextQuestionOrResults() {
         if  self.isLastQuestion()
         {
             viewController?.showAlert()
@@ -120,11 +117,10 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
-    func proceedWithAnswer(isCorrect: Bool) {
+    private func proceedWithAnswer(isCorrect: Bool) {
         if isCorrect {
             correctAnswers += 1
         }
-        
         viewController?.highlightImageBorder(isCorrectAnswer: isCorrect)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
@@ -133,4 +129,3 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
 }
-

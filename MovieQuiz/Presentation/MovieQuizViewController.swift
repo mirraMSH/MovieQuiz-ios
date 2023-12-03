@@ -1,7 +1,15 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController {
-    
+protocol MovieQuizViewControllerProtocol: AnyObject {
+    func show(quiz step: QuizStepViewModel)
+    func showAlert ()
+    func highlightImageBorder(isCorrectAnswer: Bool)
+    func showLoadingIndicator()
+    func hideLoadingIndicator()
+    func showNetworkError(message: String)
+}
+
+final class MovieQuizViewController: UIViewController, MovieQuizViewControllerProtocol {
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
@@ -13,15 +21,6 @@ final class MovieQuizViewController: UIViewController {
     private var presenter: MovieQuizPresenter!
     private var alertPresenter: AlertPresenter?
     
-    func show(quiz step: QuizStepViewModel) {
-        imageView.image = step.image
-        textLabel.text = step.question
-        counterLabel.text = step.questionNumber
-        yesButton.isEnabled = true
-        noButton.isEnabled = true
-        imageView.layer.borderColor = UIColor.clear.cgColor
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter = MovieQuizPresenter(viewController: self)
@@ -32,6 +31,15 @@ final class MovieQuizViewController: UIViewController {
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         presenter.didReceiveNextQuestion(question: question)
+    }
+    
+    func show(quiz step: QuizStepViewModel) {
+        imageView.image = step.image
+        textLabel.text = step.question
+        counterLabel.text = step.questionNumber
+        yesButton.isEnabled = true
+        noButton.isEnabled = true
+        imageView.layer.borderColor = UIColor.clear.cgColor
     }
     
     func showAlert () {
@@ -49,6 +57,8 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+        yesButton.isEnabled = false
+        noButton.isEnabled = false
     }
     
     func hideLoadingIndicator() {
@@ -85,4 +95,3 @@ final class MovieQuizViewController: UIViewController {
         presenter.noButtonClicked()
     }
 }
-
