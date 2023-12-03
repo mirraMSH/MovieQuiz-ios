@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 final class AlertPresenter {
     
     private let alert: AlertModel
@@ -23,6 +22,7 @@ final class AlertPresenter {
             title: alert.title,
             message: alert.message,
             preferredStyle: .alert)
+        alertController.view.accessibilityIdentifier = "Game results"
         
         alertController.addAction(UIAlertAction(
                     title: alert.buttonText,

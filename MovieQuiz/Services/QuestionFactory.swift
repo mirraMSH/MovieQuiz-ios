@@ -11,13 +11,12 @@ class QuestionFactory: QuestionFactoryProtocol {
     
     private let moviesLoader: MoviesLoading
     internal weak var delegate: QuestionFactoryDelegate?
+    private var movies: [MostPopularMovie] = []
 
         init(moviesLoader: MoviesLoading, delegate: QuestionFactoryDelegate?) {
             self.moviesLoader = moviesLoader
             self.delegate = delegate
         }
-    
-    private var movies: [MostPopularMovie] = []
     
    /* private let questions: [QuizQuestion] = [
         QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
@@ -34,8 +33,8 @@ class QuestionFactory: QuestionFactoryProtocol {
     */
     
     func loadData() {
-        moviesLoader.loadMovies { [weak self] result in
-            DispatchQueue.main.async {
+        moviesLoader.loadMovies { result in
+            DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 switch result {
                 case .success(let mostPopularMovies):
@@ -50,23 +49,26 @@ class QuestionFactory: QuestionFactoryProtocol {
     
     func requestNextQuestion() {
         DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            let index = (0..<self.movies.count).randomElement() ?? 0
-            
-            guard let movie = self.movies[safe: index] else { return }
+            guard
+                let self = self,
+                let index = (0..<self.movies.count).randomElement(),
+                let movie = self.movies[safe: index]
+            else {
+                return
+            }
             
             var imageData = Data()
-           
-           do {
-                imageData = try Data(contentsOf: movie.resizedImageURL)
+            
+            do {
+                imageData = try Data(contentsOf: movie.imageURL)
             } catch {
                 print("Failed to load image")
             }
             
             let rating = Float(movie.rating) ?? 0
             
-            let text = "Рейтинг этого фильма больше чем 7?"
-            let correctAnswer = rating > 7
+            let text = "Рейтинг этого фильма больше чем 8?"
+            let correctAnswer = rating > 8
             
             let question = QuizQuestion(image: imageData,
                                          text: text,
